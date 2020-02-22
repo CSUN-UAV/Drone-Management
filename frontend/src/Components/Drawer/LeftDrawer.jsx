@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -22,6 +23,7 @@ const useStyles = makeStyles(theme => ({
   appBar: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
+    backgroundColor: "#424242"
   },
   drawer: {
     width: drawerWidth,
@@ -29,6 +31,8 @@ const useStyles = makeStyles(theme => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    backgroundColor: theme.palette.background.default,
+
   },
   toolbar: theme.mixins.toolbar,
   content: {
