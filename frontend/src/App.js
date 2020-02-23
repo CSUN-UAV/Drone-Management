@@ -7,8 +7,7 @@ import Grid from '@material-ui/core/Grid';
 
 import {MuiThemeProvider} from '@material-ui/core/styles';
 
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
   palette: {
