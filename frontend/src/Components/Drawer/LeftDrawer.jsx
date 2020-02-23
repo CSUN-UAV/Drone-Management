@@ -12,7 +12,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
-
+import FindInPageIcon from '@material-ui/icons/FindInPage';
+import ComputerIcon from '@material-ui/icons/Computer';
 
 const drawerWidth = 240;
 
@@ -76,12 +77,14 @@ function LeftDrawer() {
         <Typography className={classes.heading} variant="h2" align='center'> CSUN<br/>UAV</Typography>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+        <ListItem button>
+            <ListItemIcon> <ComputerIcon/> </ListItemIcon>
+            <ListItemText primary="Find IP" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon> <FindInPageIcon/> </ListItemIcon>
+            <ListItemText primary="Logs" />
+          </ListItem>
         </List>
         <Divider />
         <List>
