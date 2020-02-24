@@ -1,12 +1,13 @@
 import React from 'react';
 import './App.css';
 
-import LeftDrawer from './Components/Drawer/LeftDrawer'
+import { useWs } from './Components/Hooks/useWs'
 
+
+import LeftDrawer from './Components/Drawer/LeftDrawer'
 import Grid from '@material-ui/core/Grid';
 
 import {MuiThemeProvider} from '@material-ui/core/styles';
-
 import { createMuiTheme } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
@@ -24,6 +25,8 @@ const theme = createMuiTheme({
 });
 
 function App() {
+
+  const ws = useWs();
 
 
   return (
