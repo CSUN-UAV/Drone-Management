@@ -1,11 +1,11 @@
 package logs
 
 import (
-	models "drone/Models"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
+	models "github.com/CSUN-UAV/Drone-Management/backend/Models"
 	"github.com/google/uuid"
 )
 
