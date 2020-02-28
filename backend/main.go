@@ -1,12 +1,12 @@
 package main
 
 import (
-	logs "drone/Controllers/Logs"
-	websocket "drone/Websocket"
 	"fmt"
 	"log"
 	"net/http"
 
+	logs "github.com/CSUN-UAV/Drone-Management/backend/Controllers/Logs"
+	websocket "github.com/CSUN-UAV/Drone-Management/backend/Websocket"
 	"github.com/gorilla/mux"
 )
 
