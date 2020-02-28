@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
-	logs "github.com/CSUN-UAV/Drone-Management/backend/Controllers/Logs"
+	drone_mongo "github.com/CSUN-UAV/Drone-Management/backend/Drone_mongo"
+
 	websocket "github.com/CSUN-UAV/Drone-Management/backend/Websocket"
 	"github.com/gorilla/mux"
 )
@@ -36,16 +38,30 @@ func setupRoutes() {
 	http.HandleFunc("/ws", serveWs)
 }
 
+func handleUI(w http.ResponseWriter, r *http.Request) {
+	// params := mux.Vars(r)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	drone_mongo.NewGetDocumentsTask("logs", w, &wg)
+	tobj := drone_mongo.NewGetDocumentsTask("logs", w, &wg) //notice the pointer to the wait group
+
+	fmt.Println(tobj)
+	wg.Wait()
+	fmt.Println("Wait Group Finished Success...")
+}
+
 func main() {
 	fmt.Println("Chat App v0.01")
 	r := mux.NewRouter()
-	r.HandleFunc("/api/drone/logs/ssh", logs.SshLogHandler).Methods("POST")
+	r.HandleFunc("/api/drone/logs/ssh", handleUI)
 
-	go func() {
-		http.ListenAndServe(":8082", r)
-	}()
+	// go func() {
+	// 	http.ListenAndServe(":8082", r)
+	// }()
 	// http.ListenAndServe(":8082", r)
-
 	setupRoutes()
 	http.ListenAndServe(":8080", nil)
 }

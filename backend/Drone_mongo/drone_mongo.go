@@ -2,9 +2,13 @@ package drone_mongo
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"sync"
 
 	drone_config "github.com/CSUN-UAV/Drone-Management/backend/Drone_config"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -49,5 +53,32 @@ func init() {
 		fmt.Println(err)
 	} else {
 		fmt.Println("Mongo Connected")
+	}
+}
+
+type GetDocumentsTask struct {
+	collection string
+	w          http.ResponseWriter
+	wg         *sync.WaitGroup
+}
+
+func NewGetDocumentsTask(collection string, w http.ResponseWriter, wg *sync.WaitGroup) *GetDocumentsTask {
+	return &GetDocumentsTask{collection, w, wg}
+}
+
+func (t *GetDocumentsTask) Perform() {
+	defer t.wg.Done()
+	switch t.collection {
+	case "logs":
+		var xdoc map[string]interface{}
+		collection := client.Database("api").Collection("logs")
+		filter := bson.D{}
+
+		if err := collection.FindOne(ctx, filter).Decode(&xdoc); err != nil {
+			fmt.Println(err)
+		} else {
+			json.NewEncoder(t.w).Encode(xdoc)
+		}
+		break
 	}
 }
