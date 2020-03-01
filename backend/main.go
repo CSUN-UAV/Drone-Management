@@ -12,33 +12,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// need a rest mux router!!!
-
-// define our WebSocket endpoint
-func serveWs(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Host)
-
-	// upgrade this connection to a WebSocket
-	// connection
+func handleWs(w http.ResponseWriter, r *http.Request) {
+	// swp := r.Header.Get("Sec-Websocket-Protocol");
 	ws, err := websocket.Upgrade(w, r)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println(ws)
-	// listen indefinitely for new messages coming
-	// through on our WebSocket connection
-	// reader(ws)
+	fmt.Print(ws)
 }
 
-func setupRoutes() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Simple Server")
-	})
-	// mape our `/ws` endpoint to the `serveWs` function
-	http.HandleFunc("/ws", serveWs)
-}
-
-func handleUI(w http.ResponseWriter, r *http.Request) {
+func handleSSHLogs(w http.ResponseWriter, r *http.Request) {
 	// params := mux.Vars(r)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -56,12 +39,12 @@ func handleUI(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("Chat App v0.01")
 	r := mux.NewRouter()
-	r.HandleFunc("/api/drone/logs/ssh", handleUI)
 
-	// go func() {
-	// 	http.ListenAndServe(":8082", r)
-	// }()
-	// http.ListenAndServe(":8082", r)
-	setupRoutes()
+	// ws
+	r.HandleFunc("/ws", handleWs)
+
+	// rest
+	r.HandleFunc("/api/drone/logs/ssh", handleSSHLogs)
+
 	http.ListenAndServe(":8080", nil)
 }
