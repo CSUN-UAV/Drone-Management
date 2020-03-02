@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 
   const messages = ["lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol"]
 
-function MainContent() {
+function MainContent({ws}) {
     const classes = useStyles();
 
     const messageEndRef = useRef(null)
@@ -76,6 +76,15 @@ function MainContent() {
     const scrollToBottom = () => {
       messageEndRef.current.scrollIntoView({ behavior: "auto" })
     }
+
+    useEffect(() => {
+        if(ws.logHistory === null || ws.logHistory.length === 0){
+            fetch("https://www.csunuav.me:1200/api/drone/logs/ssh/0/logs")
+            .then(resp => resp.json())
+            .then( data => { console.log(data); ws.setLogHistory(data)})
+        }
+        console.log(ws.logHistory)
+    }, [scrollToBottom])
   
     useEffect(scrollToBottom, [messages]);
 
@@ -89,10 +98,10 @@ function MainContent() {
                         <Divider />
                             <div className={classes.messagesBody}>
                             {
-                                    messages.map(el =>
+                                    ws.logHistory && ws.logHistory.map(el =>
                                         (
                                             <div className={classes.message}>
-                                             {el}
+                                             {el.time} {el.body}
                                             </div>
                                         )
                                     )
