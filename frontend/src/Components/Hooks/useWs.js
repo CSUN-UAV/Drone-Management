@@ -39,7 +39,7 @@ export function useWs() {
     }
 
     useEffect(() => {
-        if(ws === null) { setWs(new WebSocket("ws://localhost:8080/ws")); }
+        if(ws === null) { setWs(new WebSocket("ws://csunuav.me:1200/ws")); }
         if(ws !== null && rs === 0) { configureWebsockets(); heartbeat(ws); }
     }, [ws,rs])
 

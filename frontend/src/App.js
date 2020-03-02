@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-import { useWs } from './Components/Hooks/useWs'
+// import { useWs } from './Components/Hooks/useWs'
 
 
 import LeftDrawer from './Components/Drawer/LeftDrawer'
@@ -26,7 +26,7 @@ const theme = createMuiTheme({
 
 function App() {
 
-  const ws = useWs();
+  // const ws = useWs();
 
 
   return (

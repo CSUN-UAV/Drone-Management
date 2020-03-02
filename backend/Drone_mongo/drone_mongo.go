@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	drone_config "github.com/CSUN-UAV/Drone-Management/backend/Drone_config"
+	models "github.com/CSUN-UAV/Drone-Management/backend/Models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -57,28 +58,58 @@ func init() {
 }
 
 type GetDocumentsTask struct {
+	idx			int
 	collection string
 	w          http.ResponseWriter
 	wg         *sync.WaitGroup
 }
 
-func NewGetDocumentsTask(collection string, w http.ResponseWriter, wg *sync.WaitGroup) *GetDocumentsTask {
-	return &GetDocumentsTask{collection, w, wg}
+func NewGetDocumentsTask(idx int,collection string, w http.ResponseWriter, wg *sync.WaitGroup) *GetDocumentsTask {
+	return &GetDocumentsTask{idx, collection, w, wg}
 }
 
 func (t *GetDocumentsTask) Perform() {
 	defer t.wg.Done()
 	switch t.collection {
 	case "logs":
-		var xdoc map[string]interface{}
-		collection := client.Database("api").Collection("logs")
-		filter := bson.D{}
+		// var xdoc map[string]interface{}
+		var xdoc []*models.DroneCommandLogs
+		collection := client.Database("logs").Collection("main")
+		findOptions := options.Find()
+		findOptions.SetSkip(int64(t.idx))
+		findOptions.SetSort(bson.D{{"_id", -1}})
+		findOptions.SetLimit(20)
+		// filter := bson.D{{"_id", bson.D{{"&lt", 2}}}}
 
-		if err := collection.FindOne(ctx, filter).Decode(&xdoc); err != nil {
+		cur, err := collection.Find(ctx, bson.D{}, findOptions)
+		if err != nil {
 			fmt.Println(err)
+			break
 		} else {
+			for cur.Next(ctx) {
+				// var doc map[string]interface{}
+				var log models.DroneCommandLogs
+				err := cur.Decode(&log)
+				if err != nil {
+					fmt.Println("error")
+				}
+				xdoc = append(xdoc, &log)
+			}
+			// cur.Decode(&xdoc)
 			json.NewEncoder(t.w).Encode(xdoc)
 		}
+		// if .Decode(&xdoc); err!=nil {
+		// 	fmt.Println(err)
+		// } else {
+		// 	json.NewEncoder(t.w).Encode(xdoc)
+		// }
+		// fmt.Println(collection)
+
+		// // if err := collection.FindOne(ctx, filter).Decode(&xdoc); err != nil {
+		// // 	fmt.Println(err)
+		// // } else {
+		// // 	json.NewEncoder(t.w).Encode(xdoc)
+		// // }
 		break
 	}
 }
