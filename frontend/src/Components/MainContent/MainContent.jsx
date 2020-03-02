@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 
   const messages = ["lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol","lmao", "lol"]
 
-function MainContent() {
+function MainContent({ws}) {
     const classes = useStyles();
 
     const messageEndRef = useRef(null)
@@ -77,6 +77,18 @@ function MainContent() {
       messageEndRef.current.scrollIntoView({ behavior: "auto" })
     }
   
+	useEffect(() => {
+		let url = 'noop';
+		(ws.logHistory === null) ?  url = `https://www.csunuav.me:1200/api/drone/logs/ssh/0/logs`: `https://www.csunuav.me:1200/api/drone/logs/ssh/${ws.logHistory.length}/logs`
+		if(url !== 'noop') {		
+	 		const fetchData = async () => {
+				const result = await axios(url);
+				setJsonData(result.data);
+		    };
+		    fetchData();
+		}
+    },[]);
+
     useEffect(scrollToBottom, [messages]);
 
     return (
@@ -89,7 +101,7 @@ function MainContent() {
                         <Divider />
                             <div className={classes.messagesBody}>
                             {
-                                    messages.map(el =>
+                                    ws.logHistory.map(el =>
                                         (
                                             <div className={classes.message}>
                                              {el}

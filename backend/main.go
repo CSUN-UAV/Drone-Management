@@ -12,20 +12,52 @@ import (
 
 	drone_asynq "github.com/CSUN-UAV/Drone-Management/backend/Drone_asynq"
 	websocket "github.com/CSUN-UAV/Drone-Management/backend/Websocket"
+
+	// "github.com/gorilla/websocket"
 	"github.com/gorilla/mux"
 )
 
 var addr = flag.String("addr", "0.0.0.0:1200", "http service address")
+// var upgrader = websocket.Upgrader{}
+
+type msg struct {
+	Type string `json:"type"`
+	Data string	`json:"data"`
+}
 
 
 func handleWs(w http.ResponseWriter, r *http.Request) {
-	swp := r.Header.Get("Sec-Websocket-Protocol");
+	// upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	// ws, err := upgrader.Upgrade(w, r, nil) // add rh later
+
+	// swp := r.Header.Get("Sec-Websocket-Protocol");
 	ws, err := websocket.Upgrade(w, r)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Print(ws)
-	fmt.Print(swp)
+	// fmt.Println(swp)
+
+	Loop:
+		for {
+			in := msg{}
+			
+			err := ws.ReadJSON(&in)
+
+			if err != nil {
+				ws.Close()
+				fmt.Println("error while reading json", err)
+				break Loop
+			}
+
+			switch(in.Type) {
+				case "AddLog":
+					tobj := drone_mongo.NewAddLogToDbTask(in.Data, ws);
+					drone_asynq.TaskQueue <- tobj
+					break;
+				default:
+					break;
+			}
+		}
 }
 
 func handleSSHLogs(w http.ResponseWriter, r *http.Request) {
@@ -63,5 +95,6 @@ func main() {
 	// rest
 	r.HandleFunc("/api/drone/logs/ssh/{idx:[0-9]+}/{log_type}", handleSSHLogs)
 
+	// http.ListenAndServe(*addr, r)
 	http.ListenAndServeTLS(*addr, "/etc/letsencrypt/live/csunuav.me/cert.pem", "/etc/letsencrypt/live/csunuav.me/privkey.pem", r)
 }

@@ -9,6 +9,8 @@ import (
 
 	drone_config "github.com/CSUN-UAV/Drone-Management/backend/Drone_config"
 	models "github.com/CSUN-UAV/Drone-Management/backend/Models"
+
+	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -98,18 +100,28 @@ func (t *GetDocumentsTask) Perform() {
 			// cur.Decode(&xdoc)
 			json.NewEncoder(t.w).Encode(xdoc)
 		}
-		// if .Decode(&xdoc); err!=nil {
-		// 	fmt.Println(err)
-		// } else {
-		// 	json.NewEncoder(t.w).Encode(xdoc)
-		// }
-		// fmt.Println(collection)
-
-		// // if err := collection.FindOne(ctx, filter).Decode(&xdoc); err != nil {
-		// // 	fmt.Println(err)
-		// // } else {
-		// // 	json.NewEncoder(t.w).Encode(xdoc)
-		// // }
 		break
 	}
+}
+
+type AddLogToDbTask struct {
+	Data		string
+	ws 			*websocket.Conn
+}
+
+func NewAddLogToDbTask(data string, ws *websocket.Conn) *AddLogToDbTask {
+	return &AddLogToDbTask{data, ws}
+}
+
+func (t *AddLogToDbTask) Perform() {
+	log := models.DroneCommandLogs{}
+	err := json.Unmarshal([]byte(t.Data), &log);
+
+	if err != nil {
+		fmt.Println("err")
+		return
+	}
+
+	collection := client.Database("logs").Collection("main")
+	collection.InsertOne(ctx, log)
 }

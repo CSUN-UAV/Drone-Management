@@ -18,16 +18,24 @@ export function useWs() {
         );
     }
 
+    // useEffect(() => {
+    //     if(logHistory === null){
+    //         break
+    //     } else if (logHistory === []){
+
+    //     }
+    // }, [logHistory])
+
     
     const configureWebsockets = async() => {
         ws.onopen = function (open_event) {
             ws.onmessage = function(event) {
                 let message = JSON.parse(event.data);
                 console.log(message)
-                // switch(message['Type']){
-                //     default:
-                //         break;
-                // }
+                switch(message['Type']){
+                    default:
+                        break;
+                }
             }
         }
         ws.onclose = function(close_event) {

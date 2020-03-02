@@ -26,13 +26,13 @@ const theme = createMuiTheme({
 
 function App() {
 
-  // const ws = useWs();
+  const ws = useWs();
 
 
   return (
     <MuiThemeProvider theme={theme}>
       <Grid>
-        <LeftDrawer></LeftDrawer>
+        <LeftDrawer ws={ws}></LeftDrawer>
       </Grid>
     </MuiThemeProvider>
   );

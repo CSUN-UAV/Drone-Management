@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function LeftDrawer() {
+function LeftDrawer({ws}) {
   const classes = useStyles();
 
   return (
@@ -97,7 +97,7 @@ function LeftDrawer() {
           ))}
         </List>
       </Drawer>
-      <MainContent/>
+      <MainContent ws={ws}/>
     </div>
   );
 }
