@@ -79,7 +79,7 @@ func (t *GetDocumentsTask) Perform() {
 		collection := client.Database("logs").Collection("main")
 		findOptions := options.Find()
 		findOptions.SetSkip(int64(t.idx))
-		findOptions.SetSort(bson.D{{"_id", -1}})
+		// findOptions.SetSort(bson.D{{"_id", -1}})
 		findOptions.SetLimit(20)
 		// filter := bson.D{{"_id", bson.D{{"&lt", 2}}}}
 
@@ -105,23 +105,32 @@ func (t *GetDocumentsTask) Perform() {
 }
 
 type AddLogToDbTask struct {
-	Data		string
+	// Data		string
+	// Data		interface{}
+	Data 		json.RawMessage
 	ws 			*websocket.Conn
 }
 
-func NewAddLogToDbTask(data string, ws *websocket.Conn) *AddLogToDbTask {
+func NewAddLogToDbTask(data json.RawMessage, ws *websocket.Conn) *AddLogToDbTask {
+// func NewAddLogToDbTask(data interface{}, ws *websocket.Conn) *AddLogToDbTask {
+// func NewAddLogToDbTask(data string, ws *websocket.Conn) *AddLogToDbTask{
 	return &AddLogToDbTask{data, ws}
 }
 
 func (t *AddLogToDbTask) Perform() {
 	log := models.DroneCommandLogs{}
-	err := json.Unmarshal([]byte(t.Data), &log);
+
+	err := json.Unmarshal(t.Data, &log);
+
+	// fmt.Println("init3")
+	// fmt.Println(log)
+	// err := json.Unmarshal([]byte(t.Data), &log);
 
 	if err != nil {
 		fmt.Println("err")
 		return
 	}
-
+	fmt.Println("init4")
 	collection := client.Database("logs").Collection("main")
 	collection.InsertOne(ctx, log)
 }

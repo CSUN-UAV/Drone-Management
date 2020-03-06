@@ -7,6 +7,7 @@ import (
 	"sync"
 	"flag"
 	"strconv"
+	"encoding/json"
 
 	drone_mongo "github.com/CSUN-UAV/Drone-Management/backend/Drone_mongo"
 
@@ -21,8 +22,10 @@ var addr = flag.String("addr", "0.0.0.0:1200", "http service address")
 // var upgrader = websocket.Upgrader{}
 
 type msg struct {
-	Type string `json:"type"`
-	Data string	`json:"data"`
+	Type string 		`json:"Type"`
+	Data json.RawMessage `json:"Data"`
+	// Data interface{}	`json:"Data"`
+	// Data string	`json:"Data"`
 }
 
 
@@ -39,18 +42,42 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 	Loop:
 		for {
-			in := msg{}
+			_, p, err := ws.ReadMessage()
+
+
+			fmt.Println("init1")
 			
-			err := ws.ReadJSON(&in)
+			// err := ws.ReadJSON(&in)
+
+			// if err != nil {
+			// 	ws.Close()
+			// 	fmt.Println("error while reading json... ", err)
+			// 	break Loop
+			// }
 
 			if err != nil {
+				fmt.Println(err)
 				ws.Close()
-				fmt.Println("error while reading json", err)
+				fmt.Println("read websocket err")
 				break Loop
 			}
 
+			in := &msg{}
+			err2 := json.Unmarshal(p, in)
+
+			if err2 != nil {
+				fmt.Println(err)
+				ws.Close()
+				fmt.Println("json parse err main loop")
+				break Loop
+			}
+
+			fmt.Println("init2")
+			fmt.Println(in.Type)
+
 			switch(in.Type) {
 				case "AddLog":
+					fmt.Println(in.Data)
 					tobj := drone_mongo.NewAddLogToDbTask(in.Data, ws);
 					drone_asynq.TaskQueue <- tobj
 					break;

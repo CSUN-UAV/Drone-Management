@@ -80,14 +80,13 @@ function MainContent({ws}) {
 	useEffect(() => {
 		let url = 'noop';
 		(ws.logHistory === null) ?  url = `https://www.csunuav.me:1200/api/drone/logs/ssh/0/logs`: `https://www.csunuav.me:1200/api/drone/logs/ssh/${ws.logHistory.length}/logs`
-		if(url !== 'noop') {		
-	 		const fetchData = async () => {
-				const result = await axios(url);
-				setJsonData(result.data);
-		    };
-		    fetchData();
-		}
-    },[]);
+		// if(url !== 'noop') {		
+            fetch(url);
+            .then(() => 
+                ws.setLogHistory(result.data);
+            )
+		// }
+    },[logHistory]);
 
     useEffect(scrollToBottom, [messages]);
 
