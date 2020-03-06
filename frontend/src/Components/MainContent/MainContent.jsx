@@ -76,6 +76,15 @@ function MainContent({ws}) {
     const scrollToBottom = () => {
       messageEndRef.current.scrollIntoView({ behavior: "auto" })
     }
+
+    useEffect(() => {
+        if(ws.logHistory === null || ws.logHistory.length === 0){
+            fetch("https://www.csunuav.me:1200/api/drone/logs/ssh/0/logs")
+            .then(resp => resp.json())
+            .then( data => { console.log(data); ws.setLogHistory(data)})
+        }
+        console.log(ws.logHistory)
+    }, [scrollToBottom])
   
 	useEffect(() => {
 		let url = 'noop';
@@ -100,10 +109,10 @@ function MainContent({ws}) {
                         <Divider />
                             <div className={classes.messagesBody}>
                             {
-                                    ws.logHistory.map(el =>
+                                    ws.logHistory && ws.logHistory.map(el =>
                                         (
                                             <div className={classes.message}>
-                                             {el}
+                                             {el.time} {el.body}
                                             </div>
                                         )
                                     )
