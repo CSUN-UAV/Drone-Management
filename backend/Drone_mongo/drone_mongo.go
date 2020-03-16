@@ -79,7 +79,7 @@ func (t *GetDocumentsTask) Perform() {
 		collection := client.Database("logs").Collection("main")
 		findOptions := options.Find()
 		findOptions.SetSkip(int64(t.idx))
-		// findOptions.SetSort(bson.D{{"_id", -1}})
+		findOptions.SetSort(bson.D{{"_id", -1}})
 		findOptions.SetLimit(20)
 		// filter := bson.D{{"_id", bson.D{{"&lt", 2}}}}
 
@@ -96,6 +96,9 @@ func (t *GetDocumentsTask) Perform() {
 					fmt.Println("error")
 				}
 				xdoc = append(xdoc, &log)
+			}
+			for i, j := 0, len(xdoc) -1; i < j; i, j = i+1, j-1 {
+				xdoc[i], xdoc[j] = xdoc[j], xdoc[i]
 			}
 			// cur.Decode(&xdoc)
 			json.NewEncoder(t.w).Encode(xdoc)
